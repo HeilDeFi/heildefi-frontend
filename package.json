@@ -1,7 +1,7 @@
 {
   "name": "@heildefi/frontend",
   "version": "1.0.0",
-  "homepage": ".",
+  "homepage": "https://heildefi.com",
   "private": true,
   "dependencies": {
     "@ethersproject/providers": "^5.4.1",
@@ -23,6 +23,7 @@
     "@web3-react/types": "^6.0.7",
     "antd": "^4.18.3",
     "bootstrap": "^5.1.3",
+    "gh-pages": "^3.2.3",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.1",
     "react-dom": "^17.0.2",
@@ -66,10 +67,11 @@
     "build": "react-scripts build",
     "build:testnet": "cross-env REACT_APP_FRONTEND_NETWORK=testnet react-scripts build",
     "build:mainnet": "cross-env REACT_APP_FRONTEND_NETWORK=mainnet react-scripts build",
-    "deploy": "cp build/index.html build/200.html && surge ./build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -b master -d build"
+    },
   "eslintConfig": {
     "extends": [
       "react-app",
