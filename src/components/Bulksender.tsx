@@ -3,35 +3,25 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
 import { Contract } from '@harmony-js/contract';
-import { toBech32 } from '@harmony-js/crypto';
-import { fromWei, Units, Unit } from '@harmony-js/utils';
+import {  fromWei, Units, Unit } from '@harmony-js/utils';
 
 import { useHarmony } from '../context/harmonyContext';
 
 import { createBulkSenderContract, getBulkSenderContractFromConnector } from '../helpers/bulksenderHelper';
-const bulksend = (amount: string, to: string) => {
-	return {
-		to: toBech32(to, 'one1'),
-		value: amount,
-		gasLimit: 210000,
-		gasPrice: 3000000000,
-		shardID: 0,
-	};
-};
+
 
 const Bulksender = () => {
-	const [receiverAddress, setReceiverAddress] = useState('');
-	const [_fee, setFee] = useState('0');
+	const [, setDonationStored] = useState('0');
 	const { hmy, fetchBalance } = useHarmony();
 	const [contract, setContract] = useState<Contract | null>(createBulkSenderContract(hmy));
 	const { account, connector, library } = useWeb3React();
 
-	const getReceiverAddress = async () => {
+	const getDonationStored = async () => {
 		if (contract) {
 			try {
-				const bulksend = await contract.methods.getReceiverAddress().call();
-				const parsedAddress = toBech32(bulksend, 'one1');
-				setReceiverAddress(parsedAddress);
+				const donations = await contract.methods.getDonationStored().call();
+				const parsedDonations = fromWei(donations, Units.one);
+				setDonationStored(parsedDonations);
 			} catch (error) {
 				console.error(error);
 			}
@@ -39,7 +29,7 @@ const Bulksender = () => {
 	};
 
 	useEffect(() => {
-		getReceiverAddress();
+		getDonationStored();
 	}, []);
 
 	useEffect(() => {
@@ -60,14 +50,19 @@ const Bulksender = () => {
 	const handleClick = (value: string) => async () => {
 		if (account && contract) {
 			try {
-				await contract.methods.bulksend().send({
+				await contract.methods.addDonation().send({
 					from: account,
 					gasPrice: 3000000000,
 					gasLimit: 210000,
 					shardID: 0,
-					to : getReceiverAddress,
 					value: new Unit(value).asOne().toWei(),
 					data: '0x',
+				});
+				toast.success('Transaction done, Thanks for your donate ', {
+					onClose: async () => {
+						await fetchBalance(account);
+						getDonationStored();
+					},
 				});
 			} catch (error) {
 				console.error(error);
@@ -79,7 +74,7 @@ const Bulksender = () => {
 
 	return (
 		<InfoContractComponent>
-			<Wrapper>
+			<Wrapper> {handleClick}
 			UNDER MAINTENANCE
 			<Subtitle>Sorry if you see this, we're fixing the bug. "Come back later" </Subtitle>
 			</Wrapper>
@@ -114,32 +109,5 @@ const Subtitle = styled.h2`
 	margin-bottom: 20px;
 `;
 
-const Donation = styled.li`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: rgba(255, 255, 255, 0.7);
-	color: black;
-	padding: 20px 20px;
-	border-radius: 10px;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.2);
-	font-size: 1.5rem;
-	transition: background-color 0.3s ease;
-	&:hover {
-		background-color: rgba(255, 255, 255, 1);
-		cursor: pointer;
-	}
-	span {
-		font-size: 1rem;
-		margin-left: 8px;
-		align-self: flex-end;
-	}
-`;
-
-const TotalStaked = styled.div`
-	font-size: 3.5rem;
-	margin-top: 16px;
-	color: black;
-`;
 
 export default Bulksender;
