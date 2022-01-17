@@ -1,0 +1,31 @@
+{
+  "name": "mainnet",
+  "chainId": "1666600000",
+  "contracts": {
+    "Donation": {
+      "address": "0x06CE7ffC07D212Ab55F357767E3DDe1DfF8d6AEf",
+      "abi": [
+        {
+          "inputs": [],
+          "name": "addDonation",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getDonationStored",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+    }
+  }
+}
