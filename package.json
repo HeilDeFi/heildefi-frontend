@@ -1,7 +1,7 @@
 {
   "name": "@heildefi/frontend",
   "version": "1.0.0",
-  "homepage": "https://heildefi.com",
+  "homepage": "https://heildefi.github.io",
   "private": true,
   "dependencies": {
     "@ethersproject/providers": "^5.4.1",
